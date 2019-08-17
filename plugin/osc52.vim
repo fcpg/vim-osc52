@@ -31,7 +31,7 @@ endfun
 " Base64 the entire string and wraps it in a single OSC52
 function! s:get_OSC52(str)
   let b64 = s:b64encode(a:str)
-  let rv = "\e]52;0;" . b64 . "\x07"
+  let rv = "\033]52;c;" . b64 . "\a"
   return rv
 endfun
 
@@ -54,7 +54,7 @@ function! s:get_OSC52_DCS(str)
   "  there should be a better way.)
   let b64 = substitute(b64, '/', '\', 'g')
   " Now wrap the whole thing in <start-dcs><start-osc52>...<end-osc52><end-dcs>.
-  let b64 = "\ePtmux;\e\e]52;0;" . b64 . "\x07\e\x5c"
+  let b64 = "\ePtmux;\e\033]52;c;" . b64 . "\a\e\x5c"
   " echom "b64: " b64
   return b64
 endfun
