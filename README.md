@@ -4,7 +4,7 @@ OSC 52 is a terminal sequence used to copy printed text into clipboard.
 It is useful in some environments, or when SSH'ing into some server and you
 need to copy back output from there into your local clipboard.
 
-Your terminal must support OSC 52, of course (eg. mintty does).
+Your terminal must support OSC 52, of course (e.g. mintty does).
 
 Tmux is supported.
 
@@ -18,8 +18,9 @@ Use your favorite method:
 
 Usage
 ------
-Eg.
-`xmap  <F7>  y:call SendViaOSC52(getreg('"'))<cr>`
+Copy to system clipboard:
+  `vmap <C-c> y:Oscyank<cr>`
+  `xmap <F7> y:Oscyank<cr>`
 
 Acknowledgments
 ----------------

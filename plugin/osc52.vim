@@ -1,14 +1,10 @@
-" Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
-" Use of this source code is governed by a BSD-style license that can be
-" found in the LICENSE file.
+" Code from Chromium, tweaked for personal use.
 
-"
-" This script can be used to send an arbitrary string to the terminal clipboard
+" Can be used to send an arbitrary string to the terminal clipboard
 " using the OSC 52 escape sequence, as specified in
-" http://invisible-island.net/xterm/ctlseqs/ctlseqs.html, section "Operating
-" System Controls", Ps => 52.
 "
 " To add this script to vim...
+"
 "  1. Save it somewhere.
 "  2. Edit ~/.vimrc to include...
 "       source ~/path/to/osc52.vim
@@ -16,14 +12,13 @@
 "
 " This will map Ctrl-C to copy.  You can now select text in vi using the visual
 " mark mode or the mouse, and press Ctrl-C to copy it to the clipboard.
-"
 
-" Max length of the OSC 52 sequence.  Sequences longer than this will not be
-" sent to the terminal.
+" Max length of the OSC 52 sequence.
+" Sequences longer than this will not be sent to the terminal.
 let g:max_osc52_sequence=100000
 
-" Send a string to the terminal's clipboard using the OSC 52 sequence.
-function! SendViaOSC52 (str)
+" Sends a string to the terminal's clipboard using the OSC 52 sequence.
+function! SendViaOSC52(str)
   " Since tmux defaults to setting TERM=screen (ugh), we need to detect it here
   " specially.
   if !empty($TMUX)
@@ -40,34 +35,33 @@ function! SendViaOSC52 (str)
   else
     echo "Selection too long to send to terminal: " . len
   endif
-endfunction
+endfun
 
-" This function base64's the entire string and wraps it in a single OSC52.
+" base64s the entire string and wraps it in a single OSC52.
 "
 " It's appropriate when running in a raw terminal that supports OSC 52.
-function! s:get_OSC52 (str)
+function! s:get_OSC52(str)
   let b64 = s:b64encode(a:str, 0)
   let rv = "\e]52;c;" . b64 . "\x07"
   return rv
-endfunction
+endfun
 
-" This function base64's the entire string and wraps it in a single OSC52 for
-" tmux.
+" base64s the entire string and wraps it in a single OSC52 for tmux.
 "
 " This is for `tmux` sessions which filters OSC 52 locally.
-function! s:get_OSC52_tmux (str)
+function! s:get_OSC52_tmux(str)
   let b64 = s:b64encode(a:str, 0)
   let rv = "\ePtmux;\e\e]52;c;" . b64 . "\x07\e\\"
   return rv
-endfunction
+endfun
 
-" This function base64's the entire source, wraps it in a single OSC52, and then
+" base64s the entire source, wraps it in a single OSC52, and then
 " breaks the result in small chunks which are each wrapped in a DCS sequence.
 "
 " This is appropriate when running on `screen`.  Screen doesn't support OSC 52,
 " but will pass the contents of a DCS sequence to the outer terminal unmolested.
 " It imposes a small max length to DCS sequences, so we send in chunks.
-function! s:get_OSC52_DCS (str)
+function! s:get_OSC52_DCS(str)
   let b64 = s:b64encode(a:str, 76)
 
   " Remove the trailing newline.
@@ -86,16 +80,16 @@ function! s:get_OSC52_DCS (str)
   let b64 = "\eP\e]52;c;" . b64 . "\x07\e\x5c"
 
   return b64
-endfunction
+endfun
 
-" Echo a string to the terminal without munging the escape sequences.
+" Echoes a string to the terminal without munging the escape sequences.
 "
-" This function causes the terminal to flash as a side effect.  It would be
+" Causes the terminal to flash as a side effect.  It would be
 " better if it didn't, but I can't figure out how.
-function! s:rawecho (str)
+function! s:rawecho(str)
   exec("silent! !echo " . shellescape(a:str))
   redraw!
-endfunction
+endfun
 
 " Lookup table for s:b64encode.
 let s:b64_table = [
@@ -104,9 +98,11 @@ let s:b64_table = [
       \ "g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v",
       \ "w","x","y","z","0","1","2","3","4","5","6","7","8","9","+","/"]
 
-" Encode a string of bytes in base 64.
+" Encodes a string of bytes in base 64.
+"
 " Based on http://vim-soko.googlecode.com/svn-history/r405/trunk/vimfiles/
 " autoload/base64.vim
+"
 " If size is > 0 the output will be line wrapped every `size` chars.
 function! s:b64encode(str, size)
   let bytes = s:str2bytes(a:str)
@@ -142,8 +138,11 @@ function! s:b64encode(str, size)
     let b64 = strpart(b64, a:size)
   endwhile
   return chunked
-endfunction
+endfun
 
+" String to bytes
 function! s:str2bytes(str)
   return map(range(len(a:str)), 'char2nr(a:str[v:val])')
-endfunction
+endfun
+
+command! Oscyank call SendViaOSC52(getreg('"'))
