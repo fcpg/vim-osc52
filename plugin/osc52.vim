@@ -1,21 +1,31 @@
 " Code from Chromium, tweaked for personal use.
 
-" Can be used to send an arbitrary string to the terminal clipboard
-" using the OSC 52 escape sequence, as specified in
+" Send an arbitrary string to the terminal clipboard using the OSC 52 escape
+" sequence.
 "
-" To add this script to vim...
+" To add this script to vim:
 "
 "  1. Save it somewhere.
-"  2. Edit ~/.vimrc to include...
+"  2. Edit ~/.vimrc to include:
 "       source ~/path/to/osc52.vim
 "       vmap <C-c> y:call SendViaOSC52(getreg('"'))<cr>
 "
-" This will map Ctrl-C to copy.  You can now select text in vi using the visual
+" This will map Ctrl-C to copy. You can now select text in vim using the visual
 " mark mode or the mouse, and press Ctrl-C to copy it to the clipboard.
+
+
+"---------
+" Options
+"---------
 
 " Max length of the OSC 52 sequence.
 " Sequences longer than this will not be sent to the terminal.
 let g:max_osc52_sequence=100000
+
+
+"-----------
+" Functions
+"-----------
 
 " Sends a string to the terminal's clipboard using the OSC 52 sequence.
 function! SendViaOSC52(str)
@@ -144,5 +154,10 @@ endfun
 function! s:str2bytes(str)
   return map(range(len(a:str)), 'char2nr(a:str[v:val])')
 endfun
+
+
+"----------
+" Commands
+"----------
 
 command! Oscyank call SendViaOSC52(getreg('"'))
