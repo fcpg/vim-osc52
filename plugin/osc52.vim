@@ -99,7 +99,7 @@ endfun
 " Causes the terminal to flash as a side effect.  It would be
 " better if it didn't, but I can't figure out how.
 function! s:rawecho(str)
-  exec("silent! !echo " . shellescape(a:str))
+  exe "silent! !echo " . shellescape(a:str)
   redraw!
 endfun
 
@@ -163,3 +163,4 @@ endfun
 "----------
 
 command! Oscyank call SendViaOSC52(getreg('"'))
+
