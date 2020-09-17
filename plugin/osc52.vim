@@ -29,9 +29,11 @@ let g:max_osc52_sequence=100000
 
 " Sends a string to the terminal's clipboard using the OSC 52 sequence.
 function! SendViaOSC52(str)
-  " Since tmux defaults to setting TERM=screen (ugh), we need to detect it here
-  " specially.
-  if !empty($TMUX)
+  if get(g:, 'osc52_term', 'tmux') == 'tmux'
+    let osc52 = s:get_OSC52_tmux(a:str)
+  elseif get(g:, 'osc52_term', 'tmux') == 'screen'
+    let osc52 = s:get_OSC52_DCS(a:str)
+  elseif !empty($TMUX)
     let osc52 = s:get_OSC52_tmux(a:str)
   elseif match($TERM, 'screen') > -1
     let osc52 = s:get_OSC52_DCS(a:str)
