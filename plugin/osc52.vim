@@ -96,11 +96,10 @@ endfun
 
 " Echoes a string to the terminal without munging the escape sequences.
 "
-" Causes the terminal to flash as a side effect.  It would be
-" better if it didn't, but I can't figure out how.
 function! s:rawecho(str)
-  exe "silent! !echo " . shellescape(a:str)
-  redraw!
+  " exe "silent! !echo " . shellescape(a:str)
+  " redraw!
+  exe "silent! !printf \\%s " . shellescape(a:str)
 endfun
 
 " Lookup table for s:b64encode.
