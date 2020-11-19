@@ -29,16 +29,25 @@ let g:max_osc52_sequence=100000
 
 " Sends a string to the terminal's clipboard using the OSC 52 sequence.
 function! SendViaOSC52(str)
-  if get(g:, 'osc52_term', 'tmux') == 'tmux'
-    let osc52 = s:get_OSC52_tmux(a:str)
-  elseif get(g:, 'osc52_term', 'tmux') == 'screen'
-    let osc52 = s:get_OSC52_DCS(a:str)
-  elseif !empty($TMUX)
-    let osc52 = s:get_OSC52_tmux(a:str)
-  elseif match($TERM, 'screen') > -1
-    let osc52 = s:get_OSC52_DCS(a:str)
-  else
-    let osc52 = s:get_OSC52(a:str)
+  " If g:osc52_term is explicitly set use it
+  if exists('g:osc52_term')
+    if get(g:, 'osc52_term') == 'tmux'
+      let osc52 = s:get_OSC52_tmux(a:str)
+    elseif get(g:, 'osc52_term') == 'screen'
+      let osc52 = s:get_OSC52_DCS(a:str)
+    endif
+  endif
+
+  " If g:osc52_term is not set or set to unsupported value, fallback to
+  " auto-detection.
+  if !exists('l:osc52')
+    if !empty($TMUX)
+      let osc52 = s:get_OSC52_tmux(a:str)
+    elseif match($TERM, 'screen') > -1
+      let osc52 = s:get_OSC52_DCS(a:str)
+    else
+      let osc52 = s:get_OSC52(a:str)
+    endif
   endif
 
   let len = strlen(osc52)
