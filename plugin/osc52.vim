@@ -99,7 +99,9 @@ endfun
 function! s:rawecho(str)
   let redraw = get(g:, 'osc52_redraw', 2)
   let print  = get(g:, 'osc52_print', 'echo')
-  if print == 'echo'
+  if has('nvim')
+    call chansend(v:stderr, a:str)
+  elseif print == 'echo'
     exe "silent! !echo" shellescape(a:str)
   elseif print == 'printf'
     exe "silent! !printf \\%s" shellescape(a:str)
