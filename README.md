@@ -19,8 +19,8 @@ Use your favorite method:
 Usage
 ------
 Copy to system clipboard:
-  `vmap <C-c> y:Oscyank<cr>`
-  `xmap <F7> y:Oscyank<cr>`
+  `vnoremap <C-c> y:Oscyank<cr>`
+  `xnoremap <F7> y:Oscyank<cr>`
 
 Acknowledgments
 ----------------
